@@ -204,3 +204,21 @@ function resetAll() {
 
 $("sortButton").addEventListener("click", bubbleSort);
 $("resetButton").addEventListener("click", resetAll);
+
+$("pauseButton").addEventListener("click", () => {
+  if (!isSorting) return;
+  isPaused = !isPaused;
+  $("pauseButton").textContent = isPaused ? "Continuar" : "Pausar";
+  if (isPaused) setStatus("En pausa", "El algoritmo está pausado. Presiona “Continuar” para seguir con las comparaciones.");
+  else setStatus("En ejecución", "El algoritmo continúa con el ordenamiento.");
+});
+
+$("speedRange").addEventListener("input", event => {
+  const labels = { 1: "Muy lenta", 2: "Lenta", 3: "Normal", 4: "Rápida", 5: "Muy rápida" };
+  $("speedText").textContent = labels[event.target.value];
+});
+
+function applySearch() {
+  searchTerm = $("searchInput").value.trim().toLowerCase();
+  renderProducts();
+}
