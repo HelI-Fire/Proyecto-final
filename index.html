@@ -77,3 +77,15 @@
           <div><span class="metric-label">Intercambios</span><strong id="swaps">0</strong></div>
           <div><span class="metric-label">Pasada</span><strong id="passNumber">0</strong></div>
         </div>
+        <div class="animation-controls">
+          <label for="speedRange">Velocidad</label>
+          <input id="speedRange" type="range" min="1" max="5" value="3">
+          <span id="speedText">Normal</span>
+          <button id="pauseButton" class="small-button" type="button" disabled>Pausar</button>
+        </div>
+        <div class="legend">
+          <span><i class="legend-box comparing"></i> Comparando</span>
+          <span><i class="legend-box swapping"></i> Intercambiando</span>
+          <span><i class="legend-box sorted"></i> En su posición</span>
+        </div>
+      </div>
