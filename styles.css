@@ -16,24 +16,3 @@
   font-family: "DM Sans", Arial, sans-serif;
 }
 
-* { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-body { margin: 0; color: var(--ink); background: var(--background); }
-button, input, select { font: inherit; }
-button { cursor: pointer; }
-
-.topbar {
-  min-height: 76px; background: #fff; display: flex; align-items: center;
-  justify-content: space-between; gap: 28px; padding: 14px max(5%, calc((100% - 1180px)/2));
-  border-bottom: 1px solid var(--line);
-}
-.brand { display: flex; align-items: center; gap: 10px; color: var(--navy); text-decoration: none; font-size: 21px; font-weight: 800; white-space: nowrap; }
-.brand-mark { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 11px; color: white; background: var(--blue); }
-.brand-accent { color: var(--blue); }
-.search { display: flex; flex: 1; max-width: 560px; border: 1px solid #dce2ed; border-radius: 10px; overflow: hidden; }
-.search input { width: 100%; min-width: 0; border: 0; outline: 0; padding: 12px 15px; background: #fff; }
-.search button { border: 0; padding: 0 20px; color: #fff; background: var(--blue); font-weight: 700; }
-.header-note { color: var(--muted); font-size: 13px; white-space: nowrap; }
-.categories { display: flex; justify-content: center; gap: 38px; padding: 15px; background: #fff; border-bottom: 1px solid var(--line); }
-.categories a { color: #4d5870; text-decoration: none; font-size: 14px; font-weight: 600; }
-.categories a:hover { color: var(--blue); }
