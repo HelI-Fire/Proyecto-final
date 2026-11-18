@@ -1,3 +1,44 @@
+const initialProducts = [
+  { id: 1, name: "Audífonos inalámbricos", category: "Audio", price: 349, emoji: "🎧", bg: "#e8edff" },
+  { id: 2, name: "Mochila para laptop", category: "Accesorios", price: 599, emoji: "🎒", bg: "#fff0e6" },
+  { id: 3, name: "Smartwatch deportivo", category: "Tecnología", price: 899, emoji: "⌚", bg: "#e8f6ef" },
+  { id: 4, name: "Teclado mecánico", category: "Accesorios", price: 749, emoji: "⌨️", bg: "#f1eaff" },
+  { id: 5, name: "Bocina Bluetooth", category: "Audio", price: 429, emoji: "🔊", bg: "#e5f6fb" },
+  { id: 6, name: "Cafetera compacta", category: "Hogar", price: 680, emoji: "☕", bg: "#fff0e9" },
+  { id: 7, name: "Mouse inalámbrico", category: "Accesorios", price: 199, emoji: "🖱️", bg: "#eef2f7" },
+  { id: 8, name: "Tablet de 10 pulgadas", category: "Tecnología", price: 2899, emoji: "📱", bg: "#e8edff" },
+  { id: 9, name: "Lámpara de escritorio", category: "Hogar", price: 299, emoji: "💡", bg: "#fff6d9" },
+  { id: 10, name: "Monitor de 24 pulgadas", category: "Tecnología", price: 2199, emoji: "🖥️", bg: "#e8f3ff" },
+  { id: 11, name: "Termo de acero", category: "Hogar", price: 249, emoji: "🥤", bg: "#e7f5ee" },
+  { id: 12, name: "Control para videojuegos", category: "Tecnología", price: 999, emoji: "🎮", bg: "#f0eaff" }
+];
+
+let products = [...initialProducts];
+let comparisons = 0;
+let swaps = 0;
+let currentPass = 0;
+let isSorting = false;
+let isPaused = false;
+let stopRequested = false;
+let currentPair = [];
+let sortedIds = new Set();
+let activeCategory = "Todos";
+let searchTerm = "";
+
+const $ = (id) => document.getElementById(id);
+const grid = $("productGrid");
+
+function formatPrice(price) {
+  return price.toLocaleString("es-MX", { style: "currency", currency: "MXN", maximumFractionDigits: 0 });
+}
+
+function visibleProducts() {
+  return products.filter(product => {
+    const matchesCategory = activeCategory === "Todos" || product.category === activeCategory;
+    const matchesSearch = product.name.toLowerCase().includes(searchTerm);
+    return matchesCategory && matchesSearch;
+  });
+  
 function updateMetrics() {
   $("comparisons").textContent = comparisons;
   $("swaps").textContent = swaps;
