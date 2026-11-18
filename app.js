@@ -89,3 +89,23 @@ async function bubbleSort() {
   $("pauseButton").disabled = true;
   $("pauseButton").textContent = "Pausar";
 }
+
+function resetAll() {
+  if (isSorting) {
+    stopRequested = true;
+    isPaused = false;
+  }
+  products = [...initialProducts];
+  comparisons = 0;
+  swaps = 0;
+  currentPass = 0;
+  currentPair = [];
+  sortedIds = new Set();
+  $("orderSelect").value = "asc";
+  updateMetrics();
+  renderProducts();
+  setStatus("Listo para comenzar", "Presiona “Ordenar con Bubble Sort”. El algoritmo comparará los precios de productos vecinos y los intercambiará cuando estén en el orden incorrecto.");
+}
+
+$("sortButton").addEventListener("click", bubbleSort);
+$("resetButton").addEventListener("click", resetAll);
