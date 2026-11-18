@@ -222,3 +222,20 @@ function applySearch() {
   searchTerm = $("searchInput").value.trim().toLowerCase();
   renderProducts();
 }
+
+$("searchButton").addEventListener("click", applySearch);
+$("searchInput").addEventListener("input", applySearch);
+
+document.querySelectorAll("[data-category]").forEach(link => {
+  link.addEventListener("click", () => {
+    activeCategory = link.dataset.category;
+    renderProducts();
+  });
+});
+document.querySelector('.categories a[href="#catalogo"]:not([data-category])').addEventListener("click", () => {
+  activeCategory = "Todos";
+  renderProducts();
+});
+
+renderProducts();
+updateMetrics();
