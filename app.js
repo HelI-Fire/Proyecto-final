@@ -38,7 +38,37 @@ function visibleProducts() {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm);
     return matchesCategory && matchesSearch;
   });
-  
+
+  }
+
+function renderProducts() {
+  const list = visibleProducts();
+  $("productCount").textContent = `${list.length} ${list.length === 1 ? "producto" : "productos"}`;
+  $("emptyMessage").hidden = list.length !== 0;
+  grid.innerHTML = "";
+
+  list.forEach((product, index) => {
+    const card = document.createElement("article");
+    card.className = "product-card";
+    if (currentPair.includes(product.id)) {
+      card.classList.add(isSorting ? "comparing" : "");
+    }
+    if (sortedIds.has(product.id)) card.classList.add("sorted");
+    card.innerHTML = `
+      <div class="product-visual" style="--product-bg:${product.bg}">
+        <span class="product-category">${product.category}</span>
+        <span class="product-emoji" aria-hidden="true">${product.emoji}</span>
+        ${sortedIds.has(product.id) ? '<span class="position-tag">Ordenado</span>' : ""}
+      </div>
+      <div class="product-info">
+        <h3>${product.name}</h3>
+        <strong class="product-price">${formatPrice(product.price)}</strong>
+        <span class="product-installments">Precio de ejemplo · IVA incluido</span>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
 function updateMetrics() {
   $("comparisons").textContent = comparisons;
   $("swaps").textContent = swaps;
