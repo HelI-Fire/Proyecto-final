@@ -1,3 +1,27 @@
+function updateMetrics() {
+  $("comparisons").textContent = comparisons;
+  $("swaps").textContent = swaps;
+  $("passNumber").textContent = currentPass;
+}
+
+function setStatus(status, description) {
+  $("algorithmStatus").textContent = status;
+  $("stepDescription").textContent = description;
+}
+
+function delayTime() {
+  const speeds = { 1: 1100, 2: 750, 3: 450, 4: 220, 5: 80 };
+  return speeds[Number($("speedRange").value)];
+}
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function waitIfPaused() {
+  while (isPaused && !stopRequested) await sleep(100);
+}
+
 async function bubbleSort() {
   if (isSorting) return;
 
