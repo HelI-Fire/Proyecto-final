@@ -21,3 +21,55 @@ const products = [
   { id: 11, name: "Termo de acero", category: "Hogar", price: 249 },
   { id: 12, name: "Control para videojuegos", category: "Tecnología", price: 999 }
 ];
+
+const form = document.getElementById("loginForm");
+const status = document.getElementById("status");
+
+form.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  try {
+    status.textContent = "Iniciando sesión...";
+
+    const credential = await signInWithEmailAndPassword(auth, email, password);
+
+    if (credential.user.uid !== "ZHttQaLELRQ7lHU7rdhok0v4YtS2") {
+      await signOut(auth);
+      throw new Error("Esta cuenta no tiene autorización para cargar productos.");
+    }
+
+    status.textContent = "Consultando productos existentes...";
+
+    const ids = products.map(product => product.id);
+    const productsQuery = query(
+      collection(db, "productos"),
+      where("id", "in", ids)
+    );
+
+    const snapshot = await getDocs(productsQuery);
+    const existingIds = new Set(snapshot.docs.map(doc => doc.data().id));
+
+    let added = 0;
+    let skipped = 0;
+
+    for (const product of products) {
+      if (existingIds.has(product.id)) {
+        skipped++;
+        continue;
+      }
+
+      await addDoc(collection(db, "productos"), product);
+      added++;
+    }
+
+    status.textContent = `Proceso terminado. Agregados: ${added}. Ya existentes: ${skipped}.`;
+
+    await signOut(auth);
+  } catch (error) {
+    status.textContent = "Error: " + error.message;
+    console.error(error);
+  }
+});
