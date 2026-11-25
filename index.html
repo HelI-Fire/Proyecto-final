@@ -6,19 +6,125 @@
   <meta name="description" content="Tienda virtual escolar que demuestra el algoritmo Bubble Sort.">
   <title>PRICES | Tienda en línea</title>
   <link rel="stylesheet" href="styles.css">
-  <script src="app.js" defer></script>
+  <script type="module" src="js/app.js"></script>
+  <script type="module" src="js/auth.js"></script>
+  <script type="module" src="js/cart.js"></script>
 </head>
 <body>
   <header class="topbar">
     <a class="brand" href="#" aria-label="PRICES, inicio">
       <span class="brand-mark">P</span><span>PRI<span class="brand-accent">CES</span></span>
     </a>
+
     <div class="search">
       <input id="searchInput" type="search" placeholder="Buscar productos..." aria-label="Buscar productos">
       <button id="searchButton" type="button">Buscar</button>
     </div>
-    <div class="header-note">Tu tienda de confianza</div>
-  </header>
+
+    <div class="auth-area" id="authArea">
+      <button id="loginButton" class="auth-button" type="button">Iniciar sesión</button>
+      <button id="registerButton" class="auth-button auth-button-primary" type="button">Crear cuenta</button>
+    </div>
+
+    <div class="user-area" id="userArea" hidden>
+  <span id="userName">Usuario</span>
+
+  <button id="cartButton" class="auth-button" type="button">
+    🛒 Carrito
+    <span id="cartCount">0</span>
+  </button>
+
+  <button id="historyButton" class="auth-button" type="button">
+  📋 Mis compras
+  </button>
+
+  <button id="logoutButton" class="auth-button" type="button">
+    Cerrar sesión
+  </button>
+</div>
+
+<div class="cart-modal" id="historyModal" hidden>
+  <div class="cart-content">
+    <div class="cart-header">
+      <h2>📋 Mis compras</h2>
+      <button id="closeHistoryModal" type="button">×</button>
+    </div>
+
+    <div id="historyItems" class="cart-items">
+      <p>Aún no tienes compras registradas.</p>
+    </div>
+  </div>
+</div>
+
+</header>
+
+  <div class="auth-modal" id="authModal" hidden>
+    <div class="auth-modal-content">
+      <button id="closeAuthModal" class="close-modal" type="button" aria-label="Cerrar">×</button>
+
+      <h2 id="authTitle">Iniciar sesión</h2>
+      <p id="authDescription">Ingresa a tu cuenta de PRICES.</p>
+
+      <form id="loginForm">
+        <label for="loginEmail">Correo electrónico</label>
+        <input id="loginEmail" type="email" placeholder="ejemplo@correo.com" required>
+
+        <label for="loginPassword">Contraseña</label>
+        <input id="loginPassword" type="password" placeholder="Tu contraseña" required>
+
+        <button class="auth-submit" type="submit">Iniciar sesión</button>
+      </form>
+
+      <form id="registerForm" hidden>
+        <label for="registerName">Nombre completo</label>
+        <input id="registerName" type="text" placeholder="Tu nombre" required>
+
+        <label for="registerEmail">Correo electrónico</label>
+        <input id="registerEmail" type="email" placeholder="ejemplo@correo.com" required>
+
+        <label for="registerPassword">Contraseña</label>
+        <input id="registerPassword" type="password" placeholder="Mínimo 6 caracteres" minlength="6" required>
+
+        <button class="auth-submit" type="submit">Crear cuenta</button>
+      </form>
+
+      <p id="authMessage" class="auth-message" aria-live="polite"></p>
+
+      <p class="auth-switch" id="authSwitch">
+        ¿No tienes cuenta?
+        <button id="switchAuth" type="button">Regístrate</button>
+      </p>
+    </div>
+  </div>
+
+  <div class="cart-modal" id="cartModal" hidden>
+    <div class="cart-modal-content">
+
+      <button id="closeCartModal" class="close-modal" type="button" aria-label="Cerrar">
+        ×
+      </button>
+
+      <h2>Mi carrito</h2>
+      <p>Productos que has seleccionado.</p>
+
+      <div id="cartItems" class="cart-items">
+        <p>Tu carrito está vacío.</p>
+      </div>
+
+      <div class="cart-summary">
+        <span>Total:</span>
+        <strong id="cartTotal">$0</strong>
+      </div>
+
+      <button id="clearCartButton" class="secondary-button" type="button">
+        Vaciar carrito
+      </button>
+      <button id="checkoutButton" class="checkout-button" type="button">
+        Finalizar compra
+      </button>
+
+    </div>
+  </div>
 
   <nav class="categories" aria-label="Categorías">
     <a href="#catalogo">Todos</a>
@@ -52,8 +158,8 @@
         </div>
         <span class="product-count" id="productCount">12 productos</span>
       </div>
-      
-<div class="toolbar">
+
+      <div class="toolbar">
         <label class="sort-label" for="orderSelect">Orden:</label>
         <select id="orderSelect">
           <option value="asc">Precio: menor a mayor</option>
@@ -62,50 +168,3 @@
         <button id="sortButton" class="primary-button" type="button">▶ Ordenar con Bubble Sort</button>
         <button id="resetButton" class="secondary-button" type="button">Restablecer</button>
       </div>
-
-      <div class="algorithm-panel">
-        <div class="algorithm-title">
-          <div>
-            <span class="live-dot"></span>
-            <strong>Visualización de Bubble Sort</strong>
-          </div>
-          <span id="algorithmStatus" class="status">Listo para comenzar</span>
-        </div>
-        <p id="stepDescription">Presiona “Ordenar con Bubble Sort”. El algoritmo comparará los precios de productos vecinos y los intercambiará cuando estén en el orden incorrecto.</p>
-        <div class="metrics">
-          <div><span class="metric-label">Comparaciones</span><strong id="comparisons">0</strong></div>
-          <div><span class="metric-label">Intercambios</span><strong id="swaps">0</strong></div>
-          <div><span class="metric-label">Pasada</span><strong id="passNumber">0</strong></div>
-        </div>
-        <div class="animation-controls">
-          <label for="speedRange">Velocidad</label>
-          <input id="speedRange" type="range" min="1" max="5" value="3">
-          <span id="speedText">Normal</span>
-          <button id="pauseButton" class="small-button" type="button" disabled>Pausar</button>
-        </div>
-        <div class="legend">
-          <span><i class="legend-box comparing"></i> Comparando</span>
-          <span><i class="legend-box swapping"></i> Intercambiando</span>
-          <span><i class="legend-box sorted"></i> En su posición</span>
-        </div>
-      </div>
-
-      <div id="productGrid" class="product-grid" aria-live="polite"></div>
-      <p id="emptyMessage" class="empty-message" hidden>No se encontraron productos.</p>
-    </section>
-
-    <section class="explanation">
-      <div class="explanation-icon">💡</div>
-      <div>
-        <h2>¿Cómo funciona Bubble Sort?</h2>
-        <p>Bubble Sort recorre una lista y compara elementos que están uno junto al otro. Si dos elementos están en el orden incorrecto, intercambia sus posiciones. Repite el proceso hasta que toda la lista queda ordenada.</p>
-      </div>
-    </section>
-  </main>
-
-  <footer>
-    <strong>PRICES</strong>
-    <span>Proyecto académico: aplicación del algoritmo Bubble Sort en una tienda virtual.</span>
-  </footer>
-</body>
-</html>
