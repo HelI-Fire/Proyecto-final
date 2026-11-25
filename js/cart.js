@@ -190,3 +190,230 @@ async function loadPurchaseHistory() {
 
       historyItems.appendChild(purchaseElement);
     });
+
+  } catch (error) {
+    console.error("Error al cargar el historial:", error);
+    historyItems.innerHTML = "<p>No fue posible cargar tus compras.</p>";
+  }
+}
+
+async function saveCart() {
+  if (!currentUser) return;
+
+  try {
+    const cartReference = doc(db, "carritos", currentUser.uid);
+
+    await setDoc(cartReference, {
+      items: cart,
+      updatedAt: serverTimestamp()
+    });
+
+    renderCart();
+
+  } catch (error) {
+    console.error("Error al guardar el carrito:", error);
+    alert("No fue posible guardar el carrito. Inténtalo nuevamente.");
+  }
+}
+
+async function loadCart(user) {
+  try {
+    const cartReference = doc(db, "carritos", user.uid);
+    const snapshot = await getDoc(cartReference);
+
+    if (currentUser?.uid !== user.uid) return;
+
+    if (snapshot.exists()) {
+      const data = snapshot.data();
+
+      cart = Array.isArray(data.items) ? data.items : [];
+    } else {
+      cart = [];
+    }
+
+    renderCart();
+
+  } catch (error) {
+    console.error("Error al cargar el carrito:", error);
+    alert("No fue posible cargar tu carrito.");
+  }
+}
+
+productGrid.addEventListener("click", async (event) => {
+  const button = event.target.closest("[data-add-to-cart]");
+
+  if (!button) return;
+
+  if (!currentUser) {
+    alert("Inicia sesión para agregar productos al carrito.");
+    $("loginButton").click();
+    return;
+  }
+
+  const productId = Number(button.dataset.addToCart);
+
+  try {
+    button.disabled = true;
+
+    const products = await getCatalogProducts();
+
+    const product = products.find(item => item.id === productId);
+
+    if (!product) {
+      alert("No se encontró este producto.");
+      return;
+    }
+
+    const existingItem = cart.find(item => item.productId === productId);
+
+    if (existingItem) {
+      existingItem.quantity++;
+    } else {
+      cart.push({
+        productId: product.id,
+        name: product.name,
+        price: product.price,
+        quantity: 1
+      });
+    }
+
+    await saveCart();
+
+  } catch (error) {
+    console.error("Error al agregar producto:", error);
+    alert("No fue posible agregar el producto.");
+  } finally {
+    button.disabled = false;
+  }
+});
+
+cartItemsContainer.addEventListener("click", async (event) => {
+  const button = event.target.closest("button[data-action]");
+
+  if (!button) return;
+
+  const productId = Number(button.dataset.productId);
+  const action = button.dataset.action;
+
+  const item = cart.find(product => product.productId === productId);
+
+  if (!item) return;
+
+  if (action === "increase") {
+    item.quantity++;
+  }
+
+  if (action === "decrease") {
+    item.quantity--;
+
+    if (item.quantity <= 0) {
+      cart = cart.filter(product => product.productId !== productId);
+    }
+  }
+
+  if (action === "remove") {
+    cart = cart.filter(product => product.productId !== productId);
+  }
+
+  await saveCart();
+});
+
+historyButton.addEventListener("click", async () => {
+  if (!currentUser) {
+    $("loginButton").click();
+    return;
+  }
+
+  historyModal.hidden = false;
+  await loadPurchaseHistory();
+});
+
+closeHistoryModal.addEventListener("click", () => {
+  historyModal.hidden = true;
+});
+
+historyModal.addEventListener("click", (event) => {
+  if (event.target === historyModal) {
+    historyModal.hidden = true;
+  }
+});
+
+cartButton.addEventListener("click", () => {
+  if (!currentUser) {
+    $("loginButton").click();
+    return;
+  }
+
+  cartModal.hidden = false;
+  renderCart();
+});
+
+closeCartModal.addEventListener("click", () => {
+  cartModal.hidden = true;
+});
+
+cartModal.addEventListener("click", (event) => {
+  if (event.target === cartModal) {
+    cartModal.hidden = true;
+  }
+});
+
+clearCartButton.addEventListener("click", async () => {
+  if (!currentUser || cart.length === 0) return;
+
+  if (confirm("¿Estás seguro de que deseas vaciar tu carrito?")) {
+    cart = [];
+    await saveCart();
+  }
+});
+
+checkoutButton.addEventListener("click", async () => {
+  if (!currentUser || cart.length === 0) return;
+
+  const total = cart.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
+
+  const confirmar = confirm(
+    `Resumen de compra\n\nProductos: ${cart.length}\nTotal: ${formatPrice(total)}\n\n¿Deseas confirmar tu compra?`
+  );
+
+  if (!confirmar) return;
+
+  checkoutButton.disabled = true;
+
+  try {
+    await addDoc(collection(db, "pedidos"), {
+      usuarioId: currentUser.uid,
+      items: cart,
+      total: total,
+      estado: "Confirmado",
+      fecha: serverTimestamp()
+    });
+
+    cart = [];
+    await saveCart();
+
+    alert("¡Compra realizada correctamente!");
+  } catch (error) {
+    console.error("Error al registrar la compra:", error);
+    alert("No fue posible completar la compra. Inténtalo nuevamente.");
+  } finally {
+    renderCart();
+  }
+});
+
+onAuthStateChanged(auth, async (user) => {
+  currentUser = user;
+  cart = [];
+
+  if (user) {
+    await loadCart(user);
+  } else {
+    cartModal.hidden = true;
+    renderCart();
+  }
+});
+
+renderCart();
